@@ -100,6 +100,8 @@ Migration is not required for this demo; models use `create_all`.
 
 ## Deployment
 
+See ENV.md for copy/paste environment variables for Vercel and other hosts.
+
 ### Docker
 
 ```bash
