@@ -1,47 +1,123 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Shopify Insights - Static UI</title>
+    <title>Shopify Insights</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" />
     <style>
-      .container{max-width:980px;margin:2rem auto}
-      pre{white-space:pre-wrap;word-break:break-word}
-      textarea{width:100%}
+      :root {
+        --brand-accent: #7c5cff;
+        --bg-gradient: radial-gradient(1000px 500px at 20% -10%, rgba(124,92,255,.12), transparent),
+                        radial-gradient(800px 400px at 120% 10%, rgba(0,200,255,.10), transparent);
+      }
+      html[data-theme="light"] { --brand-accent: #6a4cff; }
+      body { min-height: 100vh; background: var(--bg-gradient); }
+      header.appbar { position: sticky; top: 0; backdrop-filter: saturate(140%) blur(8px);
+        background: color-mix(in oklab, var(--card-background-color) 88%, transparent);
+        border-bottom: 1px solid var(--muted-border-color); z-index: 10; }
+      .appbar .wrap { max-width: 1100px; margin: 0 auto; padding: .8rem 1rem; display: flex; align-items: center; justify-content: space-between; }
+      .brand { display: flex; gap: .6rem; align-items: center; font-weight: 700; letter-spacing: .2px; }
+      .brand .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--brand-accent); box-shadow: 0 0 16px var(--brand-accent); }
+      .container { max-width: 980px; margin: 2rem auto; padding: 0 1rem; }
+      .card { border: 1px solid var(--muted-border-color); border-radius: 14px; padding: 1.2rem; background: var(--card-background-color); box-shadow: 0 10px 30px rgba(0,0,0,.06); }
+      .section { margin: 1.2rem 0; }
+      pre { white-space: pre-wrap; word-break: break-word; }
+      .muted { color: var(--muted-color); font-size: .9rem; }
+      footer { margin-top: 3rem; padding: 1.2rem 0; border-top: 1px solid var(--muted-border-color); text-align: center; }
+      .link { color: var(--brand-accent); text-decoration: none; }
+      .link:hover { text-decoration: underline; }
+      .toggle { display: inline-flex; align-items: center; gap: .5rem; cursor: pointer; }
     </style>
     <script>
-      // Set this to your deployed API base URL when hosting the static site
-  const API_BASE = localStorage.getItem('API_BASE') || (location.hostname.endsWith('.vercel.app') ? '' : 'http://localhost:8000');
+      // API base for static hosting
+      const API_BASE = localStorage.getItem('API_BASE') || (location.hostname.endsWith('.vercel.app') ? '' : 'http://localhost:8000');
     </script>
   </head>
   <body>
-    <main class="container">
-      <h2>Shopify Insights - Static Demo</h2>
-      <form id="form">
-        <label for="website_url">Shopify Store URL</label>
-        <input type="url" id="website_url" name="website_url" placeholder="https://memy.co.in" required />
-        <label>
-          <input type="checkbox" name="fetch_competitors" /> Also fetch competitors (enter URLs below, optional)
+    <header class="appbar">
+      <div class="wrap">
+        <div class="brand"><span class="dot"></span> <span>Shopify Insights</span></div>
+        <label class="toggle">
+          <input type="checkbox" id="themeToggle" role="switch" />
+          <span>Dark mode</span>
         </label>
-        <textarea name="competitor_urls" rows="3" placeholder="https://hairoriginals.com\nhttps://example.myshopify.com"></textarea>
-        <details>
-          <summary>API Base (for deployed API)</summary>
-          <input id="api_base" type="url" placeholder="https://your-api.example.com" />
-          <button id="save_api" type="button">Save API Base</button>
-        </details>
-        <button type="submit">Fetch Insights</button>
-      </form>
-      <section id="result" style="display:none; margin-top: 2rem;">
-        <h4>Result</h4>
-        <pre id="json"></pre>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="section">
+        <article class="card">
+          <header>
+            <h3 style="margin:0 0 .6rem 0;">Shopify Insights</h3>
+            <p class="muted" style="margin:0">Enter a Shopify store URL to fetch catalog, hero products, policies, FAQs, socials, and more.</p>
+          </header>
+          <form id="form" style="margin-top: 1rem;">
+            <div class="grid">
+              <div>
+                <label for="website_url">Shopify Store URL</label>
+                <input type="url" id="website_url" name="website_url" placeholder="https://memy.co.in" required />
+              </div>
+              <div>
+                <label for="limit">Competitors limit</label>
+                <input type="number" id="limit" name="limit" min="1" max="10" value="5" />
+              </div>
+            </div>
+            <label>
+              <input type="checkbox" name="fetch_competitors" /> Also fetch competitors (optional)
+            </label>
+            <textarea name="competitor_urls" rows="3" placeholder="One per line (optional):
+https://hairoriginals.com
+https://example.myshopify.com"></textarea>
+
+            <details>
+              <summary>API Base (for deployed API)</summary>
+              <input id="api_base" type="url" placeholder="https://your-api.example.com" />
+              <button id="save_api" type="button">Save API Base</button>
+            </details>
+
+            <div style="display:flex; gap: .6rem; align-items:center;">
+              <button type="submit">Fetch Insights</button>
+              <button type="button" id="clearBtn" class="secondary">Clear</button>
+            </div>
+          </form>
+        </article>
       </section>
+
+      <section id="result" class="section" style="display:none;">
+        <article class="card">
+          <header style="display:flex; align-items:center; justify-content:space-between;">
+            <h4 style="margin:0">Result</h4>
+            <button type="button" id="copyBtn" class="outline">Copy JSON</button>
+          </header>
+          <pre id="json" style="margin-top:1rem;"></pre>
+        </article>
+      </section>
+
+      <footer>
+        <small class="muted">Made by <a class="link" href="https://skds.site" target="_blank" rel="noopener">Saswata Kumar Dash</a>. Built with FastAPI.</small>
+      </footer>
     </main>
+
     <script>
+      // Theme init/persist
+      (function() {
+        const key = 'theme';
+        const saved = localStorage.getItem(key);
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const initial = saved || (prefersDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', initial);
+        const cb = document.getElementById('themeToggle');
+        if (cb) cb.checked = (initial === 'dark');
+        function setTheme(mode){ document.documentElement.setAttribute('data-theme', mode); localStorage.setItem(key, mode); }
+        if (cb) cb.addEventListener('change', e => setTheme(e.target.checked ? 'dark' : 'light'));
+      })();
+
+      // API base control
       document.getElementById('api_base').value = API_BASE;
       document.getElementById('save_api').addEventListener('click', () => {
         const v = document.getElementById('api_base').value.trim();
-        if (v) {
+        if (v || v === '') {
           localStorage.setItem('API_BASE', v);
           alert('Saved.');
         }
@@ -50,6 +126,8 @@
       const form = document.getElementById('form');
       const result = document.getElementById('result');
       const jsonEl = document.getElementById('json');
+      const copyBtn = document.getElementById('copyBtn');
+      const clearBtn = document.getElementById('clearBtn');
 
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -62,12 +140,13 @@
         const fetchCompetitors = data.get('fetch_competitors') === 'on';
         const competitorsText = (data.get('competitor_urls') || '').toString().trim();
         const competitorUrls = competitorsText ? competitorsText.split(/\n+/).map(s => s.trim()).filter(Boolean) : [];
+        const limit = parseInt((data.get('limit')||'5'), 10) || 5;
 
         try {
           let payload = { website_url: url };
           let endpoint = API_BASE + '/api/insights';
           if (fetchCompetitors) {
-            payload = { website_url: url, competitor_urls: competitorUrls };
+            payload = { website_url: url, competitor_urls: competitorUrls, limit };
             endpoint = API_BASE + '/api/insights/competitors';
           }
           const res = await fetch(endpoint, {
@@ -80,6 +159,20 @@
         } catch (err) {
           jsonEl.textContent = 'Error: ' + err.message;
         }
+      });
+
+      copyBtn?.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(jsonEl.textContent || '');
+          copyBtn.textContent = 'Copied!';
+          setTimeout(()=> copyBtn.textContent = 'Copy JSON', 1200);
+        } catch {}
+      });
+
+      clearBtn?.addEventListener('click', () => {
+        (document.getElementById('website_url')||{}).value = '';
+        (document.querySelector('textarea[name="competitor_urls"]')||{}).value='';
+        result.style.display = 'none';
       });
     </script>
   </body>
