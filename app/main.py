@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .schemas import InsightsRequest, InsightsResponse
 from .scraper import get_insights
 from .config import settings
+from .competitors import discover_and_fetch
 
 try:
     from .persistence.db import Base, get_engine
@@ -66,21 +67,24 @@ async def _startup():  # pragma: no cover - side-effectful
 
 @app.post("/api/insights/competitors", response_model=dict)
 async def insights_competitors(payload: dict):
-    """Bonus: Accepts { website_url: str, competitor_urls?: [str] } and returns insights for each competitor.
-    If competitor_urls not provided, returns an empty list and a note. This avoids unreliable scraping of search engines.
+    """Bonus: Accepts { website_url: str, competitor_urls?: [str], auto_discover?: bool, limit?: int }
+    - If competitor_urls provided, uses them.
+    - Else if auto_discover true and BING key set, discovers via Bing and fetches.
+    - Else returns empty with a note.
     """
     website_url = payload.get("website_url")
     competitor_urls = payload.get("competitor_urls") or []
+    auto_discover = bool(payload.get("auto_discover"))
+    limit = int(payload.get("limit") or 5)
     if not website_url:
         raise HTTPException(status_code=422, detail="website_url required")
 
     results = []
     if not competitor_urls:
-        return {
-            "website_url": website_url,
-            "competitors": results,
-            "note": "Provide competitor_urls to fetch their insights as well."
-        }
+        if auto_discover and settings.bing_search_api_key:
+            results = await discover_and_fetch(website_url, limit=limit)
+            return {"website_url": website_url, "competitors": results, "discovered": True}
+        return {"website_url": website_url, "competitors": results, "note": "Provide competitor_urls or set auto_discover=true with Bing key."}
 
     # fetch in parallel
     tasks = [get_insights(u) for u in competitor_urls]

@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     database_url: str | None = None
     persist_enabled: bool = False
 
+    bing_search_api_key: str | None = None
+
     model_config = SettingsConfigDict(env_prefix="", env_file=".env", env_file_encoding="utf-8")
 
 

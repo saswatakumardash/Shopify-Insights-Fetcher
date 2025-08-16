@@ -127,6 +127,18 @@ API: http://localhost:8000/ (persists to MySQL at localhost:3306)
 The current UI is rendered by FastAPI with Jinja2. For a pure static site, copy `app/templates/index.html` as `index.html` and replace `endpoint` URLs with your deployed API base.
 Alternatively, use the ready-made static UI at `site/index.html` and set the API base from the UI (stored in localStorage).
 
+### Vercel
+
+Two options:
+1) Host the static UI only
+  - Create a new Vercel project, select the repo, set the root directory to `site/`.
+  - Build/Output: no build needed; output directory is `site/`.
+  - After deploy, open the site and set the API Base to your API (Render/EC2/Docker, etc.).
+
+2) Serverless FastAPI (advanced)
+  - Use a FastAPI serverless adapter (e.g., Mangum/ASGI adapter) and Vercel’s Python serverless functions. This requires restructuring into `api/` with an entry for Vercel. Not included in this repo by default to keep the app simple and portable.
+  - Recommended: Deploy the API as a container (Render/Fly.io/EC2) and point the Vercel static UI to that API.
+
 ## License
 
 MIT
