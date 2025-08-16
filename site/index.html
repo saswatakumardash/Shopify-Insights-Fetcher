@@ -12,7 +12,7 @@
     </style>
     <script>
       // Set this to your deployed API base URL when hosting the static site
-      const API_BASE = localStorage.getItem('API_BASE') || 'http://localhost:8000';
+  const API_BASE = localStorage.getItem('API_BASE') || (location.hostname.endsWith('.vercel.app') ? '' : 'http://localhost:8000');
     </script>
   </head>
   <body>

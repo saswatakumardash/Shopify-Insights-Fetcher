@@ -34,10 +34,10 @@ form.addEventListener('submit', async (e) => {
 
   try {
     let payload = { website_url: url };
-    let endpoint = '/api/insights';
+    let endpoint = (location.hostname.endsWith('.vercel.app') ? '' : '') + '/api/insights';
     if (fetchCompetitors) {
       payload = { website_url: url, competitor_urls: competitorUrls };
-      endpoint = '/api/insights/competitors';
+  endpoint = (location.hostname.endsWith('.vercel.app') ? '' : '') + '/api/insights/competitors';
     }
     const res = await fetch(endpoint, {
       method: 'POST',

@@ -135,9 +135,11 @@ Two options:
   - Build/Output: no build needed; output directory is `site/`.
   - After deploy, open the site and set the API Base to your API (Render/EC2/Docker, etc.).
 
-2) Serverless FastAPI (advanced)
-  - Use a FastAPI serverless adapter (e.g., Mangum/ASGI adapter) and Vercel’s Python serverless functions. This requires restructuring into `api/` with an entry for Vercel. Not included in this repo by default to keep the app simple and portable.
-  - Recommended: Deploy the API as a container (Render/Fly.io/EC2) and point the Vercel static UI to that API.
+2) Serverless FastAPI (included)
+  - This repo contains `api/index.py` and `vercel.json` routing /api/* to the FastAPI app.
+  - On Vercel, import the repo and deploy. Ensure Project Settings → Root Directory = repository root.
+  - Set API envs in Vercel (BING_SEARCH_API_KEY, DATABASE_URL, PERSIST_ENABLED, etc.).
+  - The static UI remains served from /site. Serverless API will be at /api/insights and /api/insights/competitors.
 
 ## License
 
