@@ -138,7 +138,8 @@ Two options:
 2) Serverless FastAPI (included)
   - This repo contains `api/index.py` and `vercel.json` routing /api/* to the FastAPI app.
   - On Vercel, import the repo and deploy. Ensure Project Settings → Root Directory = repository root.
-  - Set API envs in Vercel (BING_SEARCH_API_KEY, DATABASE_URL, PERSIST_ENABLED, etc.).
+  - Set API envs in Vercel (BING_SEARCH_API_KEY or GEMINI_API_KEY, DATABASE_URL, PERSIST_ENABLED, REQUEST_TIMEOUT_SECONDS, MAX_PAGES_TO_SCAN, USER_AGENT).
+  - For auto-discovery you can set either BING_SEARCH_API_KEY or GEMINI_API_KEY. Optional: GEMINI_MODEL (default gemini-2.0-flash-exp).
   - The static UI remains served from /site. Serverless API will be at /api/insights and /api/insights/competitors.
 
 ## License

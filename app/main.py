@@ -69,7 +69,7 @@ async def _startup():  # pragma: no cover - side-effectful
 async def insights_competitors(payload: dict):
     """Bonus: Accepts { website_url: str, competitor_urls?: [str], auto_discover?: bool, limit?: int }
     - If competitor_urls provided, uses them.
-    - Else if auto_discover true and BING key set, discovers via Bing and fetches.
+    - Else if auto_discover true and Bing or Gemini key set, discovers via Bing/Gemini and fetches.
     - Else returns empty with a note.
     """
     website_url = payload.get("website_url")
@@ -81,10 +81,10 @@ async def insights_competitors(payload: dict):
 
     results = []
     if not competitor_urls:
-        if auto_discover and settings.bing_search_api_key:
+        if auto_discover and (settings.bing_search_api_key or settings.gemini_api_key):
             results = await discover_and_fetch(website_url, limit=limit)
             return {"website_url": website_url, "competitors": results, "discovered": True}
-        return {"website_url": website_url, "competitors": results, "note": "Provide competitor_urls or set auto_discover=true with Bing key."}
+        return {"website_url": website_url, "competitors": results, "note": "Provide competitor_urls or set auto_discover=true with Bing or Gemini key."}
 
     # fetch in parallel
     tasks = [get_insights(u) for u in competitor_urls]

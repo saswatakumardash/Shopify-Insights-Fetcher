@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     persist_enabled: bool = False
 
     bing_search_api_key: str | None = None
+    gemini_api_key: str | None = None
+    gemini_model: str = "gemini-2.0-flash-exp"
 
     model_config = SettingsConfigDict(env_prefix="", env_file=".env", env_file_encoding="utf-8")
 
