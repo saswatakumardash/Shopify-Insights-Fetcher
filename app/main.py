@@ -5,6 +5,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import ORJSONResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from .schemas import InsightsRequest, InsightsResponse
 from .scraper import get_insights
@@ -20,6 +21,7 @@ except Exception:  # pragma: no cover - optional
 
 app = FastAPI(title="Shopify Insights-Fetcher", default_response_class=ORJSONResponse)
 templates = Jinja2Templates(directory="app/templates")
+app.mount("/assets", StaticFiles(directory="site/assets"), name="assets")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
