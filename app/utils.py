@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 import urllib.parse
-from typing import Iterable, Optional
+from collections.abc import Iterable
 
 from bs4 import BeautifulSoup
 
@@ -21,7 +21,7 @@ def normalize_url(url: str) -> str:
     return normalized
 
 
-def absolutize(base: str, href: str | None) -> Optional[str]:
+def absolutize(base: str, href: str | None) -> str | None:
     if not href:
         return None
     return urllib.parse.urljoin(base, href)
@@ -45,7 +45,6 @@ def find_social_links(soup: BeautifulSoup, base: str) -> dict[str, str]:
     socials = {}
     for a in soup.select("a[href]"):
         href = a.get("href", "").strip()
-        label = text_of(a).lower()
         u = absolutize(base, href)
         if not u:
             continue

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import asyncio
 import urllib.parse
-from typing import List
 
 import httpx
 
@@ -118,7 +117,7 @@ async def discover_and_fetch(website_url: str, limit: int = 5) -> list[dict]:
         return []
     results = await asyncio.gather(*[get_insights(u) for u in comps], return_exceptions=True)
     out = []
-    for url, res in zip(comps, results):
+    for url, res in zip(comps, results, strict=True):
         if isinstance(res, Exception):
             out.append({"url": url, "error": str(res)})
         else:

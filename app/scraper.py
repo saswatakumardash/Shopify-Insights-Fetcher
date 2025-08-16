@@ -2,23 +2,21 @@ from __future__ import annotations
 
 import asyncio
 import json
-import re
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urljoin, urlparse
 
 import httpx
 from bs4 import BeautifulSoup
 
 from .config import settings
-from .schemas import BrandContext, ContactInfo, FAQItem, Policy, Product, Link
+from .schemas import BrandContext, ContactInfo, FAQItem, Link, Policy, Product
 from .utils import (
-    normalize_url,
     absolutize,
-    text_of,
     find_emails,
     find_phones,
     find_social_links,
+    normalize_url,
+    text_of,
     unique,
 )
 
@@ -245,9 +243,9 @@ class ShopifyScraper:
                         links.append(Link(title=title if title != "Contact Us" else text or title, url=u))
         # de-duplicate by url
         uniq: dict[str, Link] = {}
-        for l in links:
-            if isinstance(l.url, str) and l.url not in uniq:
-                uniq[l.url] = l
+        for link in links:
+            if isinstance(link.url, str) and link.url not in uniq:
+                uniq[link.url] = link
         return about, list(uniq.values())
 
     async def extract_contact(self, soup: BeautifulSoup) -> ContactInfo:

@@ -4,7 +4,7 @@ from sqlalchemy import select
 
 from ..schemas import BrandContext
 from .db import get_session
-from .models import Store, ProductORM
+from .models import ProductORM, Store
 
 
 async def save_brand_context(ctx: BrandContext):

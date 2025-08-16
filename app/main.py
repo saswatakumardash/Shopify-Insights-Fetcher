@@ -1,16 +1,18 @@
 from __future__ import annotations
 
 import asyncio
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import ORJSONResponse, HTMLResponse
-from fastapi.templating import Jinja2Templates
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
+import contextlib
 
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse, ORJSONResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+
+from .competitors import discover_and_fetch
+from .config import settings
 from .schemas import InsightsRequest, InsightsResponse
 from .scraper import get_insights
-from .config import settings
-from .competitors import discover_and_fetch
 
 try:
     from .persistence.db import Base, get_engine
@@ -38,7 +40,7 @@ async def health():
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request, "title": "Shopify Insights"})
+    return templates.TemplateResponse("index_standalone.html", {"request": request})
 
 
 @app.post("/api/insights", response_model=InsightsResponse)
@@ -47,16 +49,13 @@ async def insights(req: InsightsRequest):
         ctx = await get_insights(req.website_url)
         # optional persistence
         if settings.persist_enabled and settings.database_url and _persistence_available:
-            try:
+            with contextlib.suppress(Exception):
                 await save_brand_context(ctx)
-            except Exception:
-                # don't fail the API if persistence fails; it's optional
-                pass
         return {"data": ctx}
-    except FileNotFoundError:
-        raise HTTPException(status_code=401, detail="website not found or unreachable")
+    except FileNotFoundError as e:
+        raise HTTPException(status_code=401, detail="website not found or unreachable") from e
     except Exception as e:  # noqa: BLE001
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @app.on_event("startup")
@@ -93,9 +92,9 @@ async def insights_competitors(payload: dict):
     try:
         contexts = await asyncio.gather(*tasks, return_exceptions=True)
     except Exception as e:  # defensive
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
-    for url, ctx in zip(competitor_urls, contexts):
+    for url, ctx in zip(competitor_urls, contexts, strict=True):
         if isinstance(ctx, Exception):
             results.append({"url": url, "error": str(ctx)})
         else:

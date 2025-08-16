@@ -1,4 +1,4 @@
-from app.utils import normalize_url, find_emails, find_phones
+from app.utils import find_emails, find_phones, normalize_url
 
 
 def test_normalize_url():

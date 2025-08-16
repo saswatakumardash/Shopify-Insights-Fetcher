@@ -2,7 +2,12 @@
 <html lang="en" data-theme="dark">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name      .brand img.logo { 
+        height: 14px; 
+        width: auto; 
+        display: none; 
+        border-radius: 2px; 
+      }port" content="width=device-width, initial-scale=1" />
     <title>{{ tit        // apply logo from localStorage if provided
         const defaultLogo = '/assets/logo512.png';
         const logoUrl = localStorage.getItem('LOGO_URL') || defaultLogo;
@@ -72,14 +77,14 @@
         background: var(--header-bg);
         border-bottom: 1px solid var(--border-default);
         z-index: 50;
-        height: 64px;
+        height: 20px;
         display: flex;
         align-items: center;
       }
       .appbar .wrap { 
         max-width: 1280px; 
         margin: 0 auto; 
-        padding: 0 24px; 
+        padding: 0 8px; 
         display: flex; 
         align-items: center; 
         justify-content: space-between; 
@@ -87,16 +92,16 @@
       }
       .brand { 
         display: flex; 
-        gap: 12px; 
+        gap: 6px; 
         align-items: center; 
         font-weight: 600; 
-        font-size: 16px;
+        font-size: 12px;
         color: var(--text-primary);
         text-decoration: none;
       }
       .brand .dot { 
-        width: 8px; 
-        height: 8px; 
+        width: 6px; 
+        height: 6px; 
         border-radius: 50%; 
         background: var(--brand-accent);
       }
@@ -267,9 +272,9 @@
       .toggle {
         display: inline-flex; 
         align-items: center; 
-        gap: 8px; 
+        gap: 4px; 
         cursor: pointer; 
-        font-size: 14px;
+        font-size: 11px;
         color: var(--text-secondary);
       }
       

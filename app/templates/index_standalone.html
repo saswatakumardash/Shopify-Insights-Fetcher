@@ -48,7 +48,7 @@
         line-height: 1.5;
       }
       
-            header.appbar {
+      header.appbar {
         position: sticky;
         top: 0;
         backdrop-filter: blur(12px);
@@ -96,7 +96,6 @@
       .hero {
         text-align: center;
         padding: 48px 0;
-        border-bottom: 1px solid var(--border-muted);
         margin-bottom: 32px;
       }
       
@@ -262,21 +261,6 @@
         margin: 0;
       }
       
-      /* API Settings */
-      details {
-        background: var(--bg-overlay);
-        border: 1px solid var(--border-default);
-        border-radius: 6px;
-        padding: 12px;
-        margin: 16px 0;
-      }
-      
-      summary {
-        font-weight: 500;
-        cursor: pointer;
-        color: var(--text-secondary);
-      }
-      
       @media (max-width: 768px) {
         .appbar .wrap { padding: 0 8px; }
         .container { padding: 16px; }
@@ -286,10 +270,6 @@
         .card { padding: 16px; }
       }
     </style>
-    <script>
-      // API base for static hosting
-      const API_BASE = localStorage.getItem('API_BASE') || (location.hostname.endsWith('.vercel.app') ? '' : 'http://localhost:8000');
-    </script>
   </head>
   <body>
     <header class="appbar">
@@ -309,7 +289,7 @@
       </div>
 
       <div class="card">
-        <form id="form">
+        <form id="form" method="post">
           <div class="form-row">
             <div class="form-group">
               <label for="website_url">Shopify Store URL</label>
@@ -330,15 +310,6 @@
             <label for="competitor_urls">Manual Competitor URLs (Optional)</label>
             <textarea id="competitor_urls" name="competitor_urls" rows="3" placeholder="Enter one URL per line:&#10;https://competitor1.com&#10;https://competitor2.myshopify.com"></textarea>
           </div>
-
-          <details>
-            <summary>API Configuration</summary>
-            <div class="form-group" style="margin-top: 12px;">
-              <label for="api_base">API Base URL</label>
-              <input id="api_base" type="url" placeholder="https://your-api.example.com" />
-              <button id="save_api" type="button" class="btn btn-secondary" style="margin-top: 8px;">Save API Base</button>
-            </div>
-          </details>
           
           <div class="btn-group">
             <button type="submit" class="btn">
@@ -385,32 +356,26 @@
         function setTheme(mode){ document.documentElement.setAttribute('data-theme', mode); localStorage.setItem(key, mode); }
         if (cb) cb.addEventListener('change', e => setTheme(e.target.checked ? 'dark' : 'light'));
         
-        // apply logo if saved
-        const defaultLogo = 'assets/logo512.png';
+        // apply logo from localStorage if provided
+        const defaultLogo = '/assets/logo512.png';
         const logoUrl = localStorage.getItem('LOGO_URL') || defaultLogo;
         const logoImg = document.getElementById('brandLogo');
-        if (logoUrl && logoImg) { 
+        if (logoUrl && logoImg) {
+          // Test if logo loads successfully
           const testImg = new Image();
           testImg.onload = function() {
-            logoImg.src = logoUrl; 
-            logoImg.style.display = 'block'; 
-            document.querySelector('.brand')?.classList.add('has-logo');
+            logoImg.src = logoUrl;
+            logoImg.style.display = 'block';
+            const brand = document.querySelector('.brand');
+            if (brand) brand.classList.add('has-logo');
           };
           testImg.onerror = function() {
-            console.log('Logo failed to load, using fallback');
+            // Fallback to dot if logo fails to load
             logoImg.style.display = 'none';
           };
           testImg.src = logoUrl;
         }
       })();
-
-      // API base control
-      document.getElementById('api_base').value = API_BASE;
-      document.getElementById('save_api').addEventListener('click', () => {
-        const v = document.getElementById('api_base').value.trim();
-        localStorage.setItem('API_BASE', v || '');
-        alert('API base saved!');
-      });
 
       const form = document.getElementById('form');
       const result = document.getElementById('result');
@@ -433,10 +398,10 @@
 
         try {
           let payload = { website_url: url };
-          let endpoint = API_BASE + '/api/insights';
+          let endpoint = '/api/insights';
           if (fetchCompetitors) {
             payload = { website_url: url, competitor_urls: competitorUrls, limit };
-            endpoint = API_BASE + '/api/insights/competitors';
+            endpoint = '/api/insights/competitors';
           }
           const res = await fetch(endpoint, {
             method: 'POST',

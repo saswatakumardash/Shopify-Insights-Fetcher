@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from typing import Dict, List, Optional
-from pydantic import BaseModel, AnyHttpUrl, HttpUrl, Field
+from pydantic import AnyHttpUrl, BaseModel, Field
 
 
 class Link(BaseModel):
@@ -21,8 +20,8 @@ class FAQItem(BaseModel):
 
 
 class ContactInfo(BaseModel):
-    emails: List[str] = Field(default_factory=list)
-    phones: List[str] = Field(default_factory=list)
+    emails: list[str] = Field(default_factory=list)
+    phones: list[str] = Field(default_factory=list)
     address: str | None = None
     contact_page_url: AnyHttpUrl | str | None = None
 
@@ -34,8 +33,8 @@ class Product(BaseModel):
     url: AnyHttpUrl | str | None = None
     price: float | None = None
     currency: str | None = None
-    images: List[str] = Field(default_factory=list)
-    tags: List[str] = Field(default_factory=list)
+    images: list[str] = Field(default_factory=list)
+    tags: list[str] = Field(default_factory=list)
     available: bool | None = None
     vendor: str | None = None
     product_type: str | None = None
@@ -47,19 +46,19 @@ class BrandContext(BaseModel):
     domain: str | None = None
 
     catalog_count: int | None = None
-    products: List[Product] = Field(default_factory=list)
-    hero_products: List[str] = Field(default_factory=list)
+    products: list[Product] = Field(default_factory=list)
+    hero_products: list[str] = Field(default_factory=list)
 
-    policies: List[Policy] = Field(default_factory=list)
-    faqs: List[FAQItem] = Field(default_factory=list)
+    policies: list[Policy] = Field(default_factory=list)
+    faqs: list[FAQItem] = Field(default_factory=list)
 
-    social_handles: Dict[str, str] = Field(default_factory=dict)
+    social_handles: dict[str, str] = Field(default_factory=dict)
     contact: ContactInfo = Field(default_factory=ContactInfo)
 
     about_text: str | None = None
-    important_links: List[Link] = Field(default_factory=list)
+    important_links: list[Link] = Field(default_factory=list)
 
-    errors: List[str] = Field(default_factory=list)
+    errors: list[str] = Field(default_factory=list)
 
 
 class InsightsRequest(BaseModel):
