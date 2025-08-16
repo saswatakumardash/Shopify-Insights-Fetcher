@@ -25,148 +25,264 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" />
     <style>
       :root {
-        --brand-accent: #7c5cff;
-        --bg-gradient: radial-gradient(900px 450px at 20% -10%, rgba(124,92,255,.08), transparent),
-                        radial-gradient(700px 350px at 120% 10%, rgba(0,200,255,.06), transparent);
-        --bg-base: #000;
-        --header-bg: rgba(0,0,0,.85);
-        --card-bg: #0a0a0a;
-        --border-color: #1a1a1a;
-        --text-primary: #f5f5f5;
-        --text-muted: #999;
+        --brand-accent: #2ea043;
+        --accent-hover: #238636;
+        --bg-base: #0d1117;
+        --bg-surface: #161b22;
+        --bg-overlay: #21262d;
+        --header-bg: rgba(13, 17, 23, 0.95);
+        --border-default: #30363d;
+        --border-muted: #21262d;
+        --text-primary: #f0f6fc;
+        --text-secondary: #8b949e;
+        --text-muted: #656d76;
+        --shadow-default: 0 8px 24px rgba(1, 4, 9, 0.15);
+        --shadow-medium: 0 16px 32px rgba(1, 4, 9, 0.15);
       }
       html[data-theme="light"] {
-        --brand-accent: #6a4cff;
-        --bg-gradient: radial-gradient(900px 450px at 20% -10%, rgba(124,92,255,.03), transparent),
-                        radial-gradient(700px 350px at 120% 10%, rgba(0,200,255,.02), transparent);
-        --bg-base: #fafafa;
-        --header-bg: rgba(255,255,255,.92);
-        --card-bg: #ffffff;
-        --border-color: #e5e5e5;
-        --text-primary: #1a1a1a;
-        --text-muted: #666;
+        --brand-accent: #1f883d;
+        --accent-hover: #1a7f37;
+        --bg-base: #ffffff;
+        --bg-surface: #f6f8fa;
+        --bg-overlay: #ffffff;
+        --header-bg: rgba(255, 255, 255, 0.95);
+        --border-default: #d0d7de;
+        --border-muted: #d8dee4;
+        --text-primary: #1f2328;
+        --text-secondary: #656d76;
+        --text-muted: #8b949e;
+        --shadow-default: 0 8px 24px rgba(140, 149, 159, 0.2);
+        --shadow-medium: 0 16px 32px rgba(140, 149, 159, 0.15);
       }
+      
+      * { box-sizing: border-box; }
+      
       body {
+        margin: 0;
         min-height: 100vh;
-        background: var(--bg-gradient), var(--bg-base);
+        background: var(--bg-base);
         color: var(--text-primary);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+        line-height: 1.5;
       }
       header.appbar {
         position: sticky;
         top: 0;
-        backdrop-filter: saturate(140%) blur(12px);
+        backdrop-filter: blur(12px);
         background: var(--header-bg);
-        border-bottom: 1px solid var(--border-color);
-        z-index: 10;
-        transition: all 0.3s ease;
+        border-bottom: 1px solid var(--border-default);
+        z-index: 50;
+        height: 64px;
+        display: flex;
+        align-items: center;
       }
       .appbar .wrap { 
-        max-width: 1100px; margin: 0 auto; padding: .3rem .8rem; 
-        display: flex; align-items: center; justify-content: space-between; 
-        min-height: 48px;
+        max-width: 1280px; 
+        margin: 0 auto; 
+        padding: 0 24px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: space-between; 
+        width: 100%;
       }
       .brand { 
-        display: flex; gap: .4rem; align-items: center; 
-        font-weight: 600; letter-spacing: .1px; font-size: .9rem; 
-        transition: transform 0.2s ease;
+        display: flex; 
+        gap: 12px; 
+        align-items: center; 
+        font-weight: 600; 
+        font-size: 16px;
+        color: var(--text-primary);
+        text-decoration: none;
       }
-      .brand:hover { transform: translateY(-1px); }
       .brand .dot { 
-        width: 6px; height: 6px; border-radius: 50%; 
-        background: var(--brand-accent); 
-        box-shadow: 0 0 8px var(--brand-accent);
-        transition: all 0.3s ease;
+        width: 8px; 
+        height: 8px; 
+        border-radius: 50%; 
+        background: var(--brand-accent);
       }
       .brand.has-logo .dot { display: none; }
       .brand img.logo { 
-        height: 18px; width: auto; display: block; border-radius: 3px; 
-        transition: transform 0.2s ease;
+        height: 24px; 
+        width: auto; 
+        display: block; 
+        border-radius: 4px; 
       }
-      .brand img.logo:hover { transform: scale(1.05); }
-      .container { max-width: 980px; margin: 1rem auto; padding: 0 1rem; }
+      .brand img.logo:hover { opacity: 0.8; transition: opacity 0.2s; }
+      .container { max-width: 1280px; margin: 0 auto; padding: 24px; }
+      
+      .hero {
+        text-align: center;
+        padding: 48px 0;
+        border-bottom: 1px solid var(--border-muted);
+        margin-bottom: 32px;
+      }
+      
+      .hero h1 {
+        font-size: 32px;
+        font-weight: 600;
+        margin: 0 0 8px 0;
+        color: var(--text-primary);
+      }
+      
+      .hero p {
+        font-size: 16px;
+        color: var(--text-secondary);
+        margin: 0;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      
       .card { 
-        border: 1px solid var(--border-color); border-radius: 12px; 
-        padding: 1.2rem; background: var(--card-bg); 
-        box-shadow: 0 4px 20px rgba(0,0,0,.08);
-        transition: all 0.3s ease;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-default);
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: var(--shadow-default);
+        margin-bottom: 24px;
       }
-      .card:hover { 
-        transform: translateY(-2px); 
-        box-shadow: 0 8px 30px rgba(0,0,0,.12);
+      
+      .form-group {
+        margin-bottom: 16px;
+      }
+      
+      .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--text-primary);
+        font-size: 14px;
+      }
+      
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 16px;
+        align-items: end;
+      }
+      
+      input, textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid var(--border-default);
+        border-radius: 6px;
+        background: var(--bg-base);
+        color: var(--text-primary);
+        font-size: 14px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+      
+      input:focus, textarea:focus {
+        outline: none;
+        border-color: var(--brand-accent);
+        box-shadow: 0 0 0 3px rgba(46, 160, 67, 0.1);
+      }
+      
+      .input-group {
+        max-width: 120px;
+      }
+      
+      textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+      
+      .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 16px 0;
+      }
+      
+      .checkbox-group input[type="checkbox"] {
+        width: auto;
+        margin: 0;
+      }
+      
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        border: 1px solid var(--border-default);
+        border-radius: 6px;
+        background: var(--brand-accent);
+        color: white;
+        font-weight: 500;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+      }
+      
+      .btn:hover {
+        background: var(--accent-hover);
+        transform: translateY(-1px);
+      }
+      
+      .btn-secondary {
+        background: transparent;
+        color: var(--text-primary);
+        border-color: var(--border-default);
+      }
+      
+      .btn-secondary:hover {
+        background: var(--bg-overlay);
+      }
+      
+      .btn-group {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-top: 16px;
       }
       .section { margin: 1rem 0; }
       pre { 
-        white-space: pre-wrap; word-break: break-word; 
-        background: var(--card-bg); color: var(--text-primary);
-        transition: all 0.3s ease;
+        white-space: pre-wrap; 
+        word-break: break-word; 
+        background: var(--bg-base);
+        color: var(--text-primary);
+        padding: 16px;
+        border-radius: 6px;
+        border: 1px solid var(--border-default);
+        font-size: 12px;
+        overflow-x: auto;
       }
-      .muted { color: var(--text-muted); font-size: .9rem; }
-      footer { margin-top: 3rem; padding: 1.2rem 0; border-top: 1px solid var(--border-color); text-align: center; }
+      .muted { color: var(--text-muted); font-size: 14px; }
+      
+      footer { 
+        margin-top: 64px; 
+        padding: 24px 0; 
+        border-top: 1px solid var(--border-muted); 
+        text-align: center; 
+      }
+      
       .link { 
-        color: var(--brand-accent); text-decoration: none; 
-        transition: all 0.2s ease;
+        color: var(--brand-accent); 
+        text-decoration: none; 
       }
-      .link:hover { text-decoration: underline; transform: translateY(-1px); }
+      .link:hover { 
+        text-decoration: underline; 
+      }
+      
       .toggle {
-        display: inline-flex; align-items: center; gap: .4rem; cursor: pointer; font-size: .9rem;
-        transition: all 0.2s ease;
-      }
-      .toggle:hover { transform: scale(1.02); }
-      
-      /* Button animations */
-      button, input[type="submit"] {
-        transition: all 0.2s ease;
-      }
-      button:hover, input[type="submit"]:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(0,0,0,.15);
+        display: inline-flex; 
+        align-items: center; 
+        gap: 8px; 
+        cursor: pointer; 
+        font-size: 14px;
+        color: var(--text-secondary);
       }
       
-      /* Input focus animations */
-      input, textarea {
-        transition: all 0.2s ease;
-      }
-      input:focus, textarea:focus {
-        transform: scale(1.01);
+      .toggle input[type="checkbox"] {
+        width: auto;
+        margin: 0;
       }
 
-      /* Mobile responsiveness */
-      @media (max-width: 768px) {
-        .appbar .wrap { 
-          padding: .25rem .6rem; 
-          min-height: 44px;
-        }
-        .brand { font-size: .85rem; gap: .3rem; }
-        .brand img.logo { height: 16px; }
-        .brand .dot { width: 5px; height: 5px; }
-        .container { padding: 0 .8rem; margin: .8rem auto; }
-        .card { padding: 1rem; border-radius: 10px; }
-        .toggle { font-size: .85rem; gap: .3rem; }
-      }
-      
-      @media (max-width: 480px) {
-        .appbar .wrap { 
-          padding: .2rem .5rem; 
-          min-height: 42px;
-        }
-        .brand { font-size: .8rem; }
-        .brand img.logo { height: 14px; }
-        .container { padding: 0 .6rem; }
-        .card { padding: .8rem; }
-      }
-
-      /* subtle animated starfield */
-      .stars, .stars::before, .stars::after { position: fixed; inset: 0; pointer-events: none; content: ""; }
-      .stars { background-image: radial-gradient(1px 1px at 20px 20px, rgba(255,255,255,.16) 50%, transparent 51%); background-size: 60px 60px; opacity: .28; animation: drift1 140s linear infinite; }
-      .stars::before { background-image: radial-gradient(1px 1px at 10px 10px, rgba(255,255,255,.12) 50%, transparent 51%); background-size: 90px 90px; opacity: .22; animation: drift2 200s linear infinite; }
-      .stars::after { background-image: radial-gradient(2px 2px at 30px 30px, rgba(255,255,255,.18) 50%, transparent 51%); background-size: 130px 130px; opacity: .18; animation: drift3 260s linear infinite; }
-      @keyframes drift1 { from { background-position: 0 0; } to { background-position: 1000px 0; } }
-      @keyframes drift2 { from { background-position: 0 0; } to { background-position: -800px 0; } }
-      @keyframes drift3 { from { background-position: 0 0; } to { background-position: 0 700px; } }
+      /* Remove old animations and stars */
+      .stars, .stars::before, .stars::after { display: none; }
     </style>
   </head>
   <body>
-    <div class="stars" aria-hidden="true"></div>
     <header class="appbar">
       <div class="wrap">
         <div class="brand"><img id="brandLogo" class="logo" alt="Logo" /><span class="dot"></span> <span>{{ title or 'Shopify Insights' }}</span></div>
