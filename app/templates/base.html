@@ -8,15 +8,16 @@
     <style>
       :root {
         --brand-accent: #7c5cff;
-        --bg-gradient: radial-gradient(1000px 500px at 20% -10%, rgba(124,92,255,.12), transparent),
-                        radial-gradient(800px 400px at 120% 10%, rgba(0,200,255,.10), transparent);
+        --bg-gradient: radial-gradient(900px 450px at 20% -10%, rgba(124,92,255,.10), transparent),
+                        radial-gradient(700px 350px at 120% 10%, rgba(0,200,255,.08), transparent);
+        --bg-base-dark: #0b1220;
       }
       html[data-theme="light"] {
         --brand-accent: #6a4cff;
       }
       body {
         min-height: 100vh;
-        background: var(--bg-gradient);
+        background: linear-gradient(180deg, rgba(0,0,0,.2), transparent 20%), var(--bg-gradient), var(--bg-base-dark);
       }
       header.appbar {
         position: sticky;
@@ -26,10 +27,12 @@
         border-bottom: 1px solid var(--muted-border-color);
         z-index: 10;
       }
-      .appbar .wrap { max-width: 1100px; margin: 0 auto; padding: .8rem 1rem; display: flex; align-items: center; justify-content: space-between; }
-      .brand { display: flex; gap: .6rem; align-items: center; font-weight: 700; letter-spacing: .2px; }
+      .appbar .wrap { max-width: 1100px; margin: 0 auto; padding: .5rem .8rem; display: flex; align-items: center; justify-content: space-between; }
+      .brand { display: flex; gap: .5rem; align-items: center; font-weight: 700; letter-spacing: .2px; }
       .brand .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--brand-accent); box-shadow: 0 0 16px var(--brand-accent); }
-      .container { max-width: 980px; margin: 2rem auto; padding: 0 1rem; }
+      .brand.has-logo .dot { display: none; }
+      .brand img.logo { height: 24px; width: auto; display: none; border-radius: 4px; }
+      .container { max-width: 980px; margin: 1.2rem auto; padding: 0 1rem; }
       .card { border: 1px solid var(--muted-border-color); border-radius: 14px; padding: 1.2rem; background: var(--card-background-color); box-shadow: 0 10px 30px rgba(0,0,0,.06); }
       .section { margin: 1.2rem 0; }
       pre { white-space: pre-wrap; word-break: break-word; }
@@ -40,12 +43,22 @@
       .toggle {
         display: inline-flex; align-items: center; gap: .5rem; cursor: pointer;
       }
+
+      /* subtle animated starfield */
+      .stars, .stars::before, .stars::after { position: fixed; inset: 0; pointer-events: none; content: ""; }
+      .stars { background-image: radial-gradient(1px 1px at 20px 20px, rgba(255,255,255,.16) 50%, transparent 51%); background-size: 60px 60px; opacity: .28; animation: drift1 140s linear infinite; }
+      .stars::before { background-image: radial-gradient(1px 1px at 10px 10px, rgba(255,255,255,.12) 50%, transparent 51%); background-size: 90px 90px; opacity: .22; animation: drift2 200s linear infinite; }
+      .stars::after { background-image: radial-gradient(2px 2px at 30px 30px, rgba(255,255,255,.18) 50%, transparent 51%); background-size: 130px 130px; opacity: .18; animation: drift3 260s linear infinite; }
+      @keyframes drift1 { from { background-position: 0 0; } to { background-position: 1000px 0; } }
+      @keyframes drift2 { from { background-position: 0 0; } to { background-position: -800px 0; } }
+      @keyframes drift3 { from { background-position: 0 0; } to { background-position: 0 700px; } }
     </style>
   </head>
   <body>
+    <div class="stars" aria-hidden="true"></div>
     <header class="appbar">
       <div class="wrap">
-        <div class="brand"><span class="dot"></span> <span>{{ title or 'Shopify Insights' }}</span></div>
+        <div class="brand"><img id="brandLogo" class="logo" alt="Logo" /><span class="dot"></span> <span>{{ title or 'Shopify Insights' }}</span></div>
         <label class="toggle">
           <input type="checkbox" id="themeToggle" role="switch" />
           <span>Dark mode</span>
@@ -72,6 +85,16 @@
           localStorage.setItem(key, mode);
         }
         if (cb) cb.addEventListener('change', e => setTheme(e.target.checked ? 'dark' : 'light'));
+
+        // apply logo from localStorage if provided
+        const logoUrl = localStorage.getItem('LOGO_URL');
+        const logoImg = document.getElementById('brandLogo');
+        if (logoUrl && logoImg) {
+          logoImg.src = logoUrl;
+          logoImg.style.display = 'inline-block';
+          const brand = document.querySelector('.brand');
+          if (brand) brand.classList.add('has-logo');
+        }
       })();
     </script>
   </body>
