@@ -8,40 +8,54 @@
     <style>
       :root {
         --brand-accent: #7c5cff;
-        --bg-gradient: radial-gradient(900px 450px at 20% -10%, rgba(124,92,255,.10), transparent),
-                        radial-gradient(700px 350px at 120% 10%, rgba(0,200,255,.08), transparent);
-        --bg-base-dark: #0b1220;
+        --bg-gradient: radial-gradient(900px 450px at 20% -10%, rgba(124,92,255,.08), transparent),
+                        radial-gradient(700px 350px at 120% 10%, rgba(0,200,255,.06), transparent);
+        --bg-base: #000;
+        --header-bg: rgba(0,0,0,.85);
+        --card-bg: #0a0a0a;
+        --border-color: #1a1a1a;
+        --text-primary: #f5f5f5;
+        --text-muted: #999;
       }
       html[data-theme="light"] {
         --brand-accent: #6a4cff;
+        --bg-gradient: radial-gradient(900px 450px at 20% -10%, rgba(124,92,255,.03), transparent),
+                        radial-gradient(700px 350px at 120% 10%, rgba(0,200,255,.02), transparent);
+        --bg-base: #fafafa;
+        --header-bg: rgba(255,255,255,.92);
+        --card-bg: #ffffff;
+        --border-color: #e5e5e5;
+        --text-primary: #1a1a1a;
+        --text-muted: #666;
       }
       body {
         min-height: 100vh;
-        background: linear-gradient(180deg, rgba(0,0,0,.2), transparent 20%), var(--bg-gradient), var(--bg-base-dark);
+        background: var(--bg-gradient), var(--bg-base);
+        color: var(--text-primary);
       }
       header.appbar {
         position: sticky;
         top: 0;
-        backdrop-filter: saturate(140%) blur(8px);
-        background: color-mix(in oklab, var(--card-background-color) 88%, transparent);
-        border-bottom: 1px solid var(--muted-border-color);
+        backdrop-filter: saturate(140%) blur(12px);
+        background: var(--header-bg);
+        border-bottom: 1px solid var(--border-color);
         z-index: 10;
       }
-      .appbar .wrap { max-width: 1100px; margin: 0 auto; padding: .5rem .8rem; display: flex; align-items: center; justify-content: space-between; }
-      .brand { display: flex; gap: .5rem; align-items: center; font-weight: 700; letter-spacing: .2px; }
-      .brand .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--brand-accent); box-shadow: 0 0 16px var(--brand-accent); }
+      .appbar .wrap { max-width: 1100px; margin: 0 auto; padding: .4rem .8rem; display: flex; align-items: center; justify-content: space-between; }
+      .brand { display: flex; gap: .4rem; align-items: center; font-weight: 600; letter-spacing: .1px; font-size: .95rem; }
+      .brand .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--brand-accent); box-shadow: 0 0 12px var(--brand-accent); }
       .brand.has-logo .dot { display: none; }
-      .brand img.logo { height: 24px; width: auto; display: none; border-radius: 4px; }
-      .container { max-width: 980px; margin: 1.2rem auto; padding: 0 1rem; }
-      .card { border: 1px solid var(--muted-border-color); border-radius: 14px; padding: 1.2rem; background: var(--card-background-color); box-shadow: 0 10px 30px rgba(0,0,0,.06); }
-      .section { margin: 1.2rem 0; }
-      pre { white-space: pre-wrap; word-break: break-word; }
-      .muted { color: var(--muted-color); font-size: .9rem; }
-      footer { margin-top: 3rem; padding: 1.2rem 0; border-top: 1px solid var(--muted-border-color); text-align: center; }
+      .brand img.logo { height: 20px; width: auto; display: none; border-radius: 3px; }
+      .container { max-width: 980px; margin: 1rem auto; padding: 0 1rem; }
+      .card { border: 1px solid var(--border-color); border-radius: 12px; padding: 1.2rem; background: var(--card-bg); box-shadow: 0 4px 20px rgba(0,0,0,.08); }
+      .section { margin: 1rem 0; }
+      pre { white-space: pre-wrap; word-break: break-word; background: var(--card-bg); color: var(--text-primary); }
+      .muted { color: var(--text-muted); font-size: .9rem; }
+      footer { margin-top: 3rem; padding: 1.2rem 0; border-top: 1px solid var(--border-color); text-align: center; }
       .link { color: var(--brand-accent); text-decoration: none; }
       .link:hover { text-decoration: underline; }
       .toggle {
-        display: inline-flex; align-items: center; gap: .5rem; cursor: pointer;
+        display: inline-flex; align-items: center; gap: .4rem; cursor: pointer; font-size: .9rem;
       }
 
       /* subtle animated starfield */
