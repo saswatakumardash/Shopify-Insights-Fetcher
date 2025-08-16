@@ -87,9 +87,10 @@
         if (cb) cb.addEventListener('change', e => setTheme(e.target.checked ? 'dark' : 'light'));
 
         // apply logo from localStorage if provided
-        const logoUrl = localStorage.getItem('LOGO_URL');
+  const defaultLogo = '/assets/logo-512.png';
+  const logoUrl = defaultLogo || localStorage.getItem('LOGO_URL');
         const logoImg = document.getElementById('brandLogo');
-        if (logoUrl && logoImg) {
+  if (logoUrl && logoImg) {
           logoImg.src = logoUrl;
           logoImg.style.display = 'inline-block';
           const brand = document.querySelector('.brand');

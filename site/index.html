@@ -123,7 +123,8 @@ https://example.myshopify.com"></textarea>
         function setTheme(mode){ document.documentElement.setAttribute('data-theme', mode); localStorage.setItem(key, mode); }
         if (cb) cb.addEventListener('change', e => setTheme(e.target.checked ? 'dark' : 'light'));
     // apply logo if saved
-    const logoUrl = localStorage.getItem('LOGO_URL');
+  const defaultLogo = '/assets/logo-512.png';
+  const logoUrl = defaultLogo || localStorage.getItem('LOGO_URL');
     const logoImg = document.getElementById('brandLogo');
     if (logoUrl && logoImg) { logoImg.src = logoUrl; logoImg.style.display = 'inline-block'; document.querySelector('.brand')?.classList.add('has-logo'); }
       })();
