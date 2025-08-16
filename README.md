@@ -83,6 +83,7 @@ pytest -q
 ```
 
 Includes a few unit tests for URL normalization and model validation (network-free).
+GitHub Actions CI runs tests on pushes/PRs to main.
 
 ## MySQL persistence (bonus)
 
@@ -107,6 +108,14 @@ docker run -p 8000:8000 shopify-insights
 ```
 
 Open http://localhost:8000/
+
+### Docker Compose (with MySQL)
+
+```bash
+docker compose up --build
+```
+
+API: http://localhost:8000/ (persists to MySQL at localhost:3306)
 
 ### Render/Heroku-like
 

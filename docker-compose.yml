@@ -1,0 +1,29 @@
+version: "3.9"
+services:
+  mysql:
+    image: mysql:8
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: shopify_insights
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+
+  api:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      - mysql
+    environment:
+      # SQLAlchemy URL to connect to MySQL service
+      DATABASE_URL: mysql+pymysql://root:root@mysql:3306/shopify_insights
+      PERSIST_ENABLED: "true"
+      REQUEST_TIMEOUT_SECONDS: 12
+      MAX_PAGES_TO_SCAN: 3
+    ports:
+      - "8000:8000"
+
+volumes:
+  dbdata:
