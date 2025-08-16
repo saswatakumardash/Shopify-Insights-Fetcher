@@ -1,24 +1,52 @@
 {% extends 'base.html' %}
 {% block content %}
-<form id="form" method="post">
-  <label for="website_url">Shopify Store URL</label>
-  <input type="url" id="website_url" name="website_url" placeholder="https://memy.co.in" required />
-  <label>
-    <input type="checkbox" name="fetch_competitors" /> Also fetch competitors (enter URLs below, optional)
-  </label>
-  <textarea name="competitor_urls" rows="3" placeholder="https://hairoriginals.com\nhttps://example.myshopify.com"></textarea>
-  <button type="submit">Fetch Insights</button>
-</form>
+<section class="section">
+  <article class="card">
+    <header>
+      <h3 style="margin:0 0 .6rem 0;">Shopify Insights</h3>
+      <p class="muted" style="margin:0">Enter a Shopify store URL to fetch catalog, hero products, policies, FAQs, socials, and more.</p>
+    </header>
+    <form id="form" method="post" style="margin-top: 1rem;">
+      <div class="grid">
+        <div>
+          <label for="website_url">Shopify Store URL</label>
+          <input type="url" id="website_url" name="website_url" placeholder="https://memy.co.in" required />
+        </div>
+        <div>
+          <label for="limit">Competitors limit</label>
+          <input type="number" id="limit" name="limit" min="1" max="10" value="5" />
+        </div>
+      </div>
+      <label>
+        <input type="checkbox" name="fetch_competitors" /> Also fetch competitors (optional)
+      </label>
+      <textarea name="competitor_urls" rows="3" placeholder="One per line (optional):
+https://hairoriginals.com
+https://example.myshopify.com"></textarea>
+      <div style="display:flex; gap: .6rem; align-items:center;">
+        <button type="submit">Fetch Insights</button>
+        <button type="button" id="clearBtn" class="secondary">Clear</button>
+      </div>
+    </form>
+  </article>
+</section>
 
-<section id="result" style="display:none; margin-top: 2rem;">
-  <h4>Result</h4>
-  <pre id="json"></pre>
+<section id="result" class="section" style="display:none;">
+  <article class="card">
+    <header style="display:flex; align-items:center; justify-content:space-between;">
+      <h4 style="margin:0">Result</h4>
+      <button type="button" id="copyBtn" class="outline">Copy JSON</button>
+    </header>
+    <pre id="json" style="margin-top:1rem;"></pre>
+  </article>
 </section>
 
 <script>
 const form = document.getElementById('form');
 const result = document.getElementById('result');
 const jsonEl = document.getElementById('json');
+const copyBtn = document.getElementById('copyBtn');
+const clearBtn = document.getElementById('clearBtn');
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -31,13 +59,14 @@ form.addEventListener('submit', async (e) => {
   const fetchCompetitors = data.get('fetch_competitors') === 'on';
   const competitorsText = (data.get('competitor_urls') || '').toString().trim();
   const competitorUrls = competitorsText ? competitorsText.split(/\n+/).map(s => s.trim()).filter(Boolean) : [];
+  const limit = parseInt((data.get('limit')||'5'), 10) || 5;
 
   try {
     let payload = { website_url: url };
     let endpoint = (location.hostname.endsWith('.vercel.app') ? '' : '') + '/api/insights';
     if (fetchCompetitors) {
-      payload = { website_url: url, competitor_urls: competitorUrls };
-  endpoint = (location.hostname.endsWith('.vercel.app') ? '' : '') + '/api/insights/competitors';
+      payload = { website_url: url, competitor_urls: competitorUrls, limit };
+      endpoint = (location.hostname.endsWith('.vercel.app') ? '' : '') + '/api/insights/competitors';
     }
     const res = await fetch(endpoint, {
       method: 'POST',
@@ -49,6 +78,20 @@ form.addEventListener('submit', async (e) => {
   } catch (err) {
     jsonEl.textContent = 'Error: ' + err.message;
   }
+});
+
+copyBtn?.addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText(jsonEl.textContent || '');
+    copyBtn.textContent = 'Copied!';
+    setTimeout(()=> copyBtn.textContent = 'Copy JSON', 1200);
+  } catch {}
+});
+
+clearBtn?.addEventListener('click', () => {
+  (document.getElementById('website_url')||{}).value = '';
+  (document.querySelector('textarea[name="competitor_urls"]')||{}).value='';
+  result.style.display = 'none';
 });
 </script>
 {% endblock %}

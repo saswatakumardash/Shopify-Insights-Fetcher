@@ -1,21 +1,78 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{{ title or 'Shopify Insights' }}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" />
     <style>
-      .container { max-width: 980px; margin: 2rem auto; }
+      :root {
+        --brand-accent: #7c5cff;
+        --bg-gradient: radial-gradient(1000px 500px at 20% -10%, rgba(124,92,255,.12), transparent),
+                        radial-gradient(800px 400px at 120% 10%, rgba(0,200,255,.10), transparent);
+      }
+      html[data-theme="light"] {
+        --brand-accent: #6a4cff;
+      }
+      body {
+        min-height: 100vh;
+        background: var(--bg-gradient);
+      }
+      header.appbar {
+        position: sticky;
+        top: 0;
+        backdrop-filter: saturate(140%) blur(8px);
+        background: color-mix(in oklab, var(--card-background-color) 88%, transparent);
+        border-bottom: 1px solid var(--muted-border-color);
+        z-index: 10;
+      }
+      .appbar .wrap { max-width: 1100px; margin: 0 auto; padding: .8rem 1rem; display: flex; align-items: center; justify-content: space-between; }
+      .brand { display: flex; gap: .6rem; align-items: center; font-weight: 700; letter-spacing: .2px; }
+      .brand .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--brand-accent); box-shadow: 0 0 16px var(--brand-accent); }
+      .container { max-width: 980px; margin: 2rem auto; padding: 0 1rem; }
+      .card { border: 1px solid var(--muted-border-color); border-radius: 14px; padding: 1.2rem; background: var(--card-background-color); box-shadow: 0 10px 30px rgba(0,0,0,.06); }
+      .section { margin: 1.2rem 0; }
       pre { white-space: pre-wrap; word-break: break-word; }
-      .muted { color: #667; font-size: .9rem; }
+      .muted { color: var(--muted-color); font-size: .9rem; }
+      footer { margin-top: 3rem; padding: 1.2rem 0; border-top: 1px solid var(--muted-border-color); text-align: center; }
+      .link { color: var(--brand-accent); text-decoration: none; }
+      .link:hover { text-decoration: underline; }
+      .toggle {
+        display: inline-flex; align-items: center; gap: .5rem; cursor: pointer;
+      }
     </style>
   </head>
   <body>
+    <header class="appbar">
+      <div class="wrap">
+        <div class="brand"><span class="dot"></span> <span>{{ title or 'Shopify Insights' }}</span></div>
+        <label class="toggle">
+          <input type="checkbox" id="themeToggle" role="switch" />
+          <span>Dark mode</span>
+        </label>
+      </div>
+    </header>
     <main class="container">
-      <h2>{{ title or 'Shopify Insights' }}</h2>
       {% block content %}{% endblock %}
-      <p class="muted">Built with FastAPI. Demo only.</p>
+      <footer>
+        <small class="muted">Made by <a class="link" href="https://skds.site" target="_blank" rel="noopener">Saswata Kumar Dash</a>. Built with FastAPI.</small>
+      </footer>
     </main>
+    <script>
+      (function() {
+        const key = 'theme';
+        const saved = localStorage.getItem(key);
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const initial = saved || (prefersDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', initial);
+        const cb = document.getElementById('themeToggle');
+        if (cb) cb.checked = (initial === 'dark');
+        function setTheme(mode){
+          document.documentElement.setAttribute('data-theme', mode);
+          localStorage.setItem(key, mode);
+        }
+        if (cb) cb.addEventListener('change', e => setTheme(e.target.checked ? 'dark' : 'light'));
+      })();
+    </script>
   </body>
 </html>
