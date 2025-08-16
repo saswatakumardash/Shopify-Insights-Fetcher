@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.venv/
+.env
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Byte-compiled / cache
+.pytest_cache/
+
+# Coverage
+htmlcov/
+.coverage*
+
+# Docker
+*.log

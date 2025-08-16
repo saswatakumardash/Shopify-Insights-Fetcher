@@ -1,0 +1,30 @@
+{
+  "info": {
+    "name": "Shopify Insights API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": {"method": "GET", "url": "http://localhost:8000/health"}
+    },
+    {
+      "name": "Insights",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {"mode": "raw", "raw": "{\n  \"website_url\": \"https://memy.co.in\"\n}"},
+        "url": "http://localhost:8000/api/insights"
+      }
+    },
+    {
+      "name": "Competitors",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {"mode": "raw", "raw": "{\n  \"website_url\": \"https://memy.co.in\",\n  \"competitor_urls\": [\n    \"https://hairoriginals.com\"\n  ]\n}"},
+        "url": "http://localhost:8000/api/insights/competitors"
+      }
+    }
+  ]
+}

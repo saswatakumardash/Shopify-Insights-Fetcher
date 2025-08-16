@@ -1,0 +1,98 @@
+from __future__ import annotations
+
+import asyncio
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import ORJSONResponse, HTMLResponse
+from fastapi.templating import Jinja2Templates
+from fastapi.middleware.cors import CORSMiddleware
+
+from .schemas import InsightsRequest, InsightsResponse
+from .scraper import get_insights
+from .config import settings
+
+try:
+    from .persistence.db import Base, get_engine
+    from .persistence.save import save_brand_context
+    _persistence_available = True
+except Exception:  # pragma: no cover - optional
+    _persistence_available = False
+
+app = FastAPI(title="Shopify Insights-Fetcher", default_response_class=ORJSONResponse)
+templates = Jinja2Templates(directory="app/templates")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+
+
+@app.get("/", response_class=HTMLResponse)
+async def index(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request, "title": "Shopify Insights"})
+
+
+@app.post("/api/insights", response_model=InsightsResponse)
+async def insights(req: InsightsRequest):
+    try:
+        ctx = await get_insights(req.website_url)
+        # optional persistence
+        if settings.persist_enabled and settings.database_url and _persistence_available:
+            try:
+                await save_brand_context(ctx)
+            except Exception:
+                # don't fail the API if persistence fails; it's optional
+                pass
+        return {"data": ctx}
+    except FileNotFoundError:
+        raise HTTPException(status_code=401, detail="website not found or unreachable")
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.on_event("startup")
+async def _startup():  # pragma: no cover - side-effectful
+    if settings.persist_enabled and settings.database_url and _persistence_available:
+        # initialize tables
+        engine = get_engine()
+        Base.metadata.create_all(bind=engine)
+
+
+@app.post("/api/insights/competitors", response_model=dict)
+async def insights_competitors(payload: dict):
+    """Bonus: Accepts { website_url: str, competitor_urls?: [str] } and returns insights for each competitor.
+    If competitor_urls not provided, returns an empty list and a note. This avoids unreliable scraping of search engines.
+    """
+    website_url = payload.get("website_url")
+    competitor_urls = payload.get("competitor_urls") or []
+    if not website_url:
+        raise HTTPException(status_code=422, detail="website_url required")
+
+    results = []
+    if not competitor_urls:
+        return {
+            "website_url": website_url,
+            "competitors": results,
+            "note": "Provide competitor_urls to fetch their insights as well."
+        }
+
+    # fetch in parallel
+    tasks = [get_insights(u) for u in competitor_urls]
+    try:
+        contexts = await asyncio.gather(*tasks, return_exceptions=True)
+    except Exception as e:  # defensive
+        raise HTTPException(status_code=500, detail=str(e))
+
+    for url, ctx in zip(competitor_urls, contexts):
+        if isinstance(ctx, Exception):
+            results.append({"url": url, "error": str(ctx)})
+        else:
+            results.append({"url": url, "data": ctx})
+
+    return {"website_url": website_url, "competitors": results}

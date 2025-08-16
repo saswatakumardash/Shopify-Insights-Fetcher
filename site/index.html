@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Shopify Insights - Static UI</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" />
+    <style>
+      .container{max-width:980px;margin:2rem auto}
+      pre{white-space:pre-wrap;word-break:break-word}
+      textarea{width:100%}
+    </style>
+    <script>
+      // Set this to your deployed API base URL when hosting the static site
+      const API_BASE = localStorage.getItem('API_BASE') || 'http://localhost:8000';
+    </script>
+  </head>
+  <body>
+    <main class="container">
+      <h2>Shopify Insights - Static Demo</h2>
+      <form id="form">
+        <label for="website_url">Shopify Store URL</label>
+        <input type="url" id="website_url" name="website_url" placeholder="https://memy.co.in" required />
+        <label>
+          <input type="checkbox" name="fetch_competitors" /> Also fetch competitors (enter URLs below, optional)
+        </label>
+        <textarea name="competitor_urls" rows="3" placeholder="https://hairoriginals.com\nhttps://example.myshopify.com"></textarea>
+        <details>
+          <summary>API Base (for deployed API)</summary>
+          <input id="api_base" type="url" placeholder="https://your-api.example.com" />
+          <button id="save_api" type="button">Save API Base</button>
+        </details>
+        <button type="submit">Fetch Insights</button>
+      </form>
+      <section id="result" style="display:none; margin-top: 2rem;">
+        <h4>Result</h4>
+        <pre id="json"></pre>
+      </section>
+    </main>
+    <script>
+      document.getElementById('api_base').value = API_BASE;
+      document.getElementById('save_api').addEventListener('click', () => {
+        const v = document.getElementById('api_base').value.trim();
+        if (v) {
+          localStorage.setItem('API_BASE', v);
+          alert('Saved.');
+        }
+      });
+
+      const form = document.getElementById('form');
+      const result = document.getElementById('result');
+      const jsonEl = document.getElementById('json');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        result.style.display = 'none';
+        jsonEl.textContent = 'Loading...';
+        result.style.display = 'block';
+
+        const data = new FormData(form);
+        const url = data.get('website_url');
+        const fetchCompetitors = data.get('fetch_competitors') === 'on';
+        const competitorsText = (data.get('competitor_urls') || '').toString().trim();
+        const competitorUrls = competitorsText ? competitorsText.split(/\n+/).map(s => s.trim()).filter(Boolean) : [];
+
+        try {
+          let payload = { website_url: url };
+          let endpoint = API_BASE + '/api/insights';
+          if (fetchCompetitors) {
+            payload = { website_url: url, competitor_urls: competitorUrls };
+            endpoint = API_BASE + '/api/insights/competitors';
+          }
+          const res = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          const body = await res.json();
+          jsonEl.textContent = JSON.stringify(body, null, 2);
+        } catch (err) {
+          jsonEl.textContent = 'Error: ' + err.message;
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block content %}
+<form id="form" method="post">
+  <label for="website_url">Shopify Store URL</label>
+  <input type="url" id="website_url" name="website_url" placeholder="https://memy.co.in" required />
+  <label>
+    <input type="checkbox" name="fetch_competitors" /> Also fetch competitors (enter URLs below, optional)
+  </label>
+  <textarea name="competitor_urls" rows="3" placeholder="https://hairoriginals.com\nhttps://example.myshopify.com"></textarea>
+  <button type="submit">Fetch Insights</button>
+</form>
+
+<section id="result" style="display:none; margin-top: 2rem;">
+  <h4>Result</h4>
+  <pre id="json"></pre>
+</section>
+
+<script>
+const form = document.getElementById('form');
+const result = document.getElementById('result');
+const jsonEl = document.getElementById('json');
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  result.style.display = 'none';
+  jsonEl.textContent = 'Loading...';
+  result.style.display = 'block';
+
+  const data = new FormData(form);
+  const url = data.get('website_url');
+  const fetchCompetitors = data.get('fetch_competitors') === 'on';
+  const competitorsText = (data.get('competitor_urls') || '').toString().trim();
+  const competitorUrls = competitorsText ? competitorsText.split(/\n+/).map(s => s.trim()).filter(Boolean) : [];
+
+  try {
+    let payload = { website_url: url };
+    let endpoint = '/api/insights';
+    if (fetchCompetitors) {
+      payload = { website_url: url, competitor_urls: competitorUrls };
+      endpoint = '/api/insights/competitors';
+    }
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const body = await res.json();
+    jsonEl.textContent = JSON.stringify(body, null, 2);
+  } catch (err) {
+    jsonEl.textContent = 'Error: ' + err.message;
+  }
+});
+</script>
+{% endblock %}

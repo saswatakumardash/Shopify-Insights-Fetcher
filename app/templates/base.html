@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ title or 'Shopify Insights' }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" />
+    <style>
+      .container { max-width: 980px; margin: 2rem auto; }
+      pre { white-space: pre-wrap; word-break: break-word; }
+      .muted { color: #667; font-size: .9rem; }
+    </style>
+  </head>
+  <body>
+    <main class="container">
+      <h2>{{ title or 'Shopify Insights' }}</h2>
+      {% block content %}{% endblock %}
+      <p class="muted">Built with FastAPI. Demo only.</p>
+    </main>
+  </body>
+</html>
